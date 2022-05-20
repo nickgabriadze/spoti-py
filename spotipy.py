@@ -61,43 +61,49 @@ class SpotiPy:
 
         return topTrendingSong
 
-    def loadFromFile(self, pathToFile):
-        with open(pathToFile, "r") as artistsFile:
-            artistsFile = artistsFile.readlines()
-            artists = "".join(artistsFile).split("#")
-            artistsList = []
-            for index, everyArtist in enumerate(artists):
-                if index > 0:
-                    artistsName = everyArtist.split(",")[0]
-                    artistsLastName = everyArtist.split(",")[1]
-                    artistsBirthYear = int(everyArtist.split(",")[2])
-                    albumsList = []
-                    singlesList = []
-                    for sIndex, singles in enumerate(everyArtist.split("@")):
-                        if sIndex > 0:
-                            for singlesListCounter in range(1, len(singles.split("|"))):
-                                singleName = singles.split("|")[singlesListCounter].split(",")[0]
-                                singleDuration = float(singles.split("|")[singlesListCounter].split(",")[1]
-                                                       .split(" ")[0]) * 60
-                                singleReleaseDate = int(singles.split("|")[singlesListCounter].split(",")[2])
-                                singleLikes = int(singles.split("|")[singlesListCounter].split(",")[3].split(" ")[0]
-                                                  .strip())
-                                newSong = Song(singleName, singleReleaseDate, singleDuration, singleLikes)
-                                singlesList.append(newSong)
 
-                    for aIndex, albums in enumerate(everyArtist.split("%")):
-                        if aIndex > 0:
-                            albumName = albums.split(",")[0]
-                            albumReleaseYear = int(albums.split(",")[1])
-                            newAlbum = Album(albumName, albumReleaseYear)
-                            for sIndex, songs in enumerate(albums.split("|")):
-                                if sIndex > 0:
-                                    songName = songs.split(",")[0]
-                                    songDuration = float(songs.split(",")[1].split(" ")[0]) * 60
-                                    songReleaseYear = int(songs.split(",")[2])
-                                    songLikes = int(songs.split(",")[3].split(" ")[0].strip())
-                                    createSong = Song(songName, songDuration, songReleaseYear, songLikes)
-                                    newAlbum.addSongs(createSong)
-                            albumsList.append(newAlbum)
-                        createArtist = Artist(artistsName, artistsLastName, artistsBirthYear, albumsList, singlesList)
-                    artistsList.append(createArtist)
+def loadFromFile(pathToFile):
+    with open(pathToFile, "r") as artistsFile:
+        artistsFile = artistsFile.readlines()
+        artists = "".join(artistsFile).split("#")
+        artistsList = []
+        for index, everyArtist in enumerate(artists):
+            if index > 0:
+                artistsName = everyArtist.split(",")[0]
+                artistsLastName = everyArtist.split(",")[1]
+                artistsBirthYear = int(everyArtist.split(",")[2])
+                albumsList = []
+                singlesList = []
+                for sIndex, singles in enumerate(everyArtist.split("@")):
+                    if sIndex > 0:
+                        for singlesListCounter in range(1, len(singles.split("|"))):
+                            singleName = singles.split("|")[singlesListCounter].split(",")[0]
+                            singleDuration = float(singles.split("|")[singlesListCounter].split(",")[1]
+                                                   .split(" ")[0]) * 60
+                            singleReleaseDate = int(singles.split("|")[singlesListCounter].split(",")[2])
+                            singleLikes = int(singles.split("|")[singlesListCounter].split(",")[3].split(" ")[0]
+                                              .strip())
+                            newSong = Song(singleName, singleReleaseDate, singleDuration, singleLikes)
+                            singlesList.append(newSong)
+
+                for aIndex, albums in enumerate(everyArtist.split("%")):
+                    if aIndex > 0:
+                        albumName = albums.split(",")[0]
+                        albumReleaseYear = int(albums.split(",")[1])
+                        newAlbum = Album(albumName, albumReleaseYear)
+                        for sIndex, songs in enumerate(albums.split("|")):
+                            if sIndex > 0:
+                                songName = songs.split(",")[0]
+                                songDuration = float(songs.split(",")[1].split(" ")[0]) * 60
+                                songReleaseYear = int(songs.split(",")[2])
+                                songLikes = int(songs.split(",")[3].split(" ")[0].strip())
+                                createSong = Song(songName, songDuration, songReleaseYear, songLikes)
+                                newAlbum.addSongs(createSong)
+                        albumsList.append(newAlbum)
+                    createArtist = Artist(artistsName, artistsLastName, artistsBirthYear, albumsList, singlesList)
+                artistsList.append(createArtist)
+        newSpotipy = SpotiPy()
+        for artist in artistsList:
+            newSpotipy.addArtists(artist)
+
+        return newSpotipy
